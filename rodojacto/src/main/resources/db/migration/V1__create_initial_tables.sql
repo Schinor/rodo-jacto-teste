@@ -1,0 +1,32 @@
+CREATE TABLE organization (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    corporate_name VARCHAR(255) NOT NULL,
+    registration_code VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted BOOL DEFAULT FALSE
+);
+
+CREATE TABLE collaborator (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    access_level ENUM('MANAGER', 'OPERATOR') NOT NULL,
+    organization_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted BOOL DEFAULT FALSE,
+    CONSTRAINT fk_collaborator_organization FOREIGN KEY (organization_id) REFERENCES organization(id)
+);
+
+CREATE TABLE device (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    model VARCHAR(255) NOT NULL,
+    asset_tag VARCHAR(255) NOT NULL UNIQUE,
+    organization_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted BOOL DEFAULT FALSE,
+    CONSTRAINT fk_device_organization FOREIGN KEY (organization_id) REFERENCES organization(id)
+);
