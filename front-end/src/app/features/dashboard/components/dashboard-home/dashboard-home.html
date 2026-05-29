@@ -2,33 +2,34 @@
   <h1>Dashboard</h1>
   <p>Bem-vindo ao sistema Rodojacto. Abaixo estão as estatísticas gerais.</p>
 
-  <div class="stats-grid" *ngIf="stats">
+  <!-- Usando parênteses para chamar o signal () -->
+  <div class="stats-grid" *ngIf="stats()">
     <div class="stat-card">
-      <div class="stat-icon">🏢</div>
       <div class="stat-info">
-        <h3>Organizações</h3>
-        <p class="stat-value">{{ stats.totalOrganizations }}</p>
+        <span class="stat-label">Organizações</span>
+        <h3>Total de Empresas</h3>
+        <p class="stat-value">{{ stats()?.totalOrganizations }}</p>
       </div>
     </div>
 
     <div class="stat-card">
-      <div class="stat-icon">👥</div>
       <div class="stat-info">
-        <h3>Colaboradores</h3>
-        <p class="stat-value">{{ stats.totalCollaborators }}</p>
+        <span class="stat-label">Colaboradores</span>
+        <h3>Total de Usuários</h3>
+        <p class="stat-value">{{ stats()?.totalCollaborators }}</p>
       </div>
     </div>
 
     <div class="stat-card">
-      <div class="stat-icon">📱</div>
       <div class="stat-info">
-        <h3>Dispositivos</h3>
-        <p class="stat-value">{{ stats.totalDevices }}</p>
+        <span class="stat-label">Dispositivos</span>
+        <h3>Total de Equipamentos</h3>
+        <p class="stat-value">{{ stats()?.totalDevices }}</p>
       </div>
     </div>
   </div>
 
-  <div *ngIf="!stats" class="loading">
+  <div *ngIf="loading()" class="loading">
     Carregando estatísticas...
   </div>
 </div>

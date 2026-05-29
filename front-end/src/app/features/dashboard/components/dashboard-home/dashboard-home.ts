@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard';
 import { DashboardStats } from '../../models/dashboard.models';
@@ -12,12 +12,21 @@ import { DashboardStats } from '../../models/dashboard.models';
 })
 export class DashboardHome implements OnInit {
   private readonly dashboardService = inject(DashboardService);
-  stats: DashboardStats | null = null;
+  
+  // Usando Signals para garantir que o Angular detecte a mudança de estado imediatamente
+  stats = signal<DashboardStats | null>(null);
+  loading = signal<boolean>(true);
 
   ngOnInit(): void {
     this.dashboardService.getStats().subscribe({
-      next: (data) => this.stats = data,
-      error: (err) => console.error('Erro ao buscar estatísticas', err)
+      next: (data) => {
+        this.stats.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Erro ao buscar estatísticas', err);
+        this.loading.set(false);
+      }
     });
   }
 }
