@@ -20,42 +20,58 @@ class DataSeeder(
 ) : CommandLineRunner {
 
     override fun run(vararg args: String) {
-        // Só injeta os dados se a tabela de organizações estiver vazia
         if (orgRepo.count() == 0L) {
             
-            val org1 = orgRepo.save(Organization(
-                corporateName = "Matriz Rodojacto",
-                registrationCode = "CNPJ-12345678000199"
-            ))
+            // 1. Organizações
+            val matriz = orgRepo.save(Organization(corporateName = "Matriz Rodojacto", registrationCode = "CNPJ-0001"))
+            val sul = orgRepo.save(Organization(corporateName = "Filial Sul", registrationCode = "CNPJ-0002"))
+            val norte = orgRepo.save(Organization(corporateName = "Filial Norte", registrationCode = "CNPJ-0003"))
+            val oeste = orgRepo.save(Organization(corporateName = "Filial Oeste", registrationCode = "CNPJ-0004"))
+            val leste = orgRepo.save(Organization(corporateName = "Filial Leste", registrationCode = "CNPJ-0005"))
 
-            val org2 = orgRepo.save(Organization(
-                corporateName = "Filial Sul",
-                registrationCode = "CNPJ-98765432000111"
-            ))
+            // 2. Colaboradores
+            val commonPass = passwordEncoder.encode("123456")!!
 
-            // Criar um Manager (Acesso Global)
-            collabRepo.save(Collaborator(
-                fullName = "Admin Gerente",
-                email = "admin@rodojacto.com.br",
-                password = passwordEncoder.encode("123456")!!,
-                accessLevel = AccessLevel.MANAGER,
-                organization = org1
-            ))
+            // Managers
+            collabRepo.save(Collaborator("Admin Gerente", "admin@rodojacto.com.br", commonPass, AccessLevel.MANAGER, matriz))
+            collabRepo.save(Collaborator("Carlos Gerente", "carlos@rodojacto.com.br", commonPass, AccessLevel.MANAGER, sul))
 
-            // Criar um Operator (Acesso Restrito à Matriz)
-            collabRepo.save(Collaborator(
-                fullName = "João Operador",
-                email = "joao@rodojacto.com.br",
-                password = passwordEncoder.encode("123456")!!,
-                accessLevel = AccessLevel.OPERATOR,
-                organization = org1
-            ))
+            // Operadores (Matriz) - 5 colaboradores
+            repeat(5) { i ->
+                collabRepo.save(Collaborator("Op Matriz $i", "op.matriz$i@rodojacto.com.br", commonPass, AccessLevel.OPERATOR, matriz))
+            }
 
-            // Criar Dispositivos
-            deviceRepo.save(Device(model = "Coletor Zebra TC21", assetTag = "TAG-001", organization = org1))
-            deviceRepo.save(Device(model = "Tablet Samsung Active 3", assetTag = "TAG-002", organization = org2))
+            // Operadores (Filial Sul) - 3 colaboradores
+            repeat(3) { i ->
+                collabRepo.save(Collaborator("Op Sul $i", "op.sul$i@rodojacto.com.br", commonPass, AccessLevel.OPERATOR, sul))
+            }
+
+            // Operadores (Filial Norte) - 8 colaboradores (Será Top 1)
+            repeat(8) { i ->
+                collabRepo.save(Collaborator("Op Norte $i", "op.norte$i@rodojacto.com.br", commonPass, AccessLevel.OPERATOR, norte))
+            }
+
+            // 3. Dispositivos
+            // Matriz - 2 dispositivos
+            deviceRepo.save(Device("Coletor Zebra TC21", "Z-001", matriz))
+            deviceRepo.save(Device("Coletor Zebra TC21", "Z-002", matriz))
+
+            // Sul - 10 dispositivos (Será Top 1)
+            repeat(10) { i ->
+                deviceRepo.save(Device("Tablet Samsung Tab A", "S-01$i", sul))
+            }
+
+            // Oeste - 6 dispositivos
+            repeat(6) { i ->
+                deviceRepo.save(Device("Leitor Honeywell", "H-02$i", oeste))
+            }
+
+            // Leste - 4 dispositivos
+            repeat(4) { i ->
+                deviceRepo.save(Device("Coletor CipherLab", "C-03$i", leste))
+            }
             
-            println("✅ Seed da base de dados concluído com sucesso!")
+            println("✅ Seed da base de dados expandido com sucesso!")
         }
     }
 }

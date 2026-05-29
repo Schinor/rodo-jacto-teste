@@ -16,6 +16,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .stat-card {
@@ -64,6 +65,59 @@
   font-size: 2.5rem;
   font-weight: 700;
   color: #2c3e50;
+}
+
+.ranking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.ranking-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.ranking-card h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  color: #34495e;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 0.75rem;
+}
+
+.ranking-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ranking-card li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.ranking-card li:last-child {
+  border-bottom: none;
+}
+
+.ranking-name {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.ranking-count {
+  background-color: #ebf5fb;
+  color: #2980b9;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
 }
 
 .loading {

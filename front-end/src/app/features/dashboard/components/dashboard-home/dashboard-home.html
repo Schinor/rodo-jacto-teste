@@ -2,7 +2,6 @@
   <h1>Dashboard</h1>
   <p>Bem-vindo ao sistema Rodojacto. Abaixo estão as estatísticas gerais.</p>
 
-  <!-- Usando parênteses para chamar o signal () -->
   <div class="stats-grid" *ngIf="stats()">
     <div class="stat-card">
       <div class="stat-info">
@@ -26,6 +25,28 @@
         <h3>Total de Equipamentos</h3>
         <p class="stat-value">{{ stats()?.totalDevices }}</p>
       </div>
+    </div>
+  </div>
+
+  <div class="ranking-grid" *ngIf="stats()">
+    <div class="ranking-card">
+      <h3>Top 5 Organizações por Colaboradores</h3>
+      <ul>
+        <li *ngFor="let item of stats()?.topOrganizationsByCollaborators">
+          <span class="ranking-name">{{ item.name }}</span>
+          <span class="ranking-count">{{ item.count }} func.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="ranking-card">
+      <h3>Top 5 Organizações por Dispositivos</h3>
+      <ul>
+        <li *ngFor="let item of stats()?.topOrganizationsByDevices">
+          <span class="ranking-name">{{ item.name }}</span>
+          <span class="ranking-count">{{ item.count }} disp.</span>
+        </li>
+      </ul>
     </div>
   </div>
 

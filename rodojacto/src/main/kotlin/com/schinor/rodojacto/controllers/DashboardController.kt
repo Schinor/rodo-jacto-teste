@@ -1,6 +1,7 @@
 package com.schinor.rodojacto.controllers
 
 import com.schinor.rodojacto.dtos.DashboardDTO
+import com.schinor.rodojacto.dtos.OrganizationStatDTO
 import com.schinor.rodojacto.repositories.CollaboratorRepository
 import com.schinor.rodojacto.repositories.DeviceRepository
 import com.schinor.rodojacto.repositories.OrganizationRepository
@@ -18,10 +19,22 @@ class DashboardController(
 
     @GetMapping("/stats")
     fun getStats(): DashboardDTO {
+        val organizations = organizationRepository.findAll()
+        
+        val topByCollaborators = organizations.map { org ->
+            OrganizationStatDTO(org.name, collaboratorRepository.findByOrganizationId(org.id!!).size.toLong())
+        }.sortedByDescending { it.count }.take(5)
+
+        val topByDevices = organizations.map { org ->
+            OrganizationStatDTO(org.name, deviceRepository.findByOrganizationId(org.id!!).size.toLong())
+        }.sortedByDescending { it.count }.take(5)
+
         return DashboardDTO(
             totalOrganizations = organizationRepository.count(),
             totalCollaborators = collaboratorRepository.count(),
-            totalDevices = deviceRepository.count()
+            totalDevices = deviceRepository.count(),
+            topOrganizationsByCollaborators = topByCollaborators,
+            topOrganizationsByDevices = topByDevices
         )
     }
 }
