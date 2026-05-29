@@ -22,11 +22,11 @@ class DashboardController(
         val organizations = organizationRepository.findAll()
         
         val topByCollaborators = organizations.map { org ->
-            OrganizationStatDTO(org.name, collaboratorRepository.findByOrganizationId(org.id!!).size.toLong())
+            OrganizationStatDTO(org.corporateName, collaboratorRepository.findByOrganizationId(org.id!!).size.toLong())
         }.sortedByDescending { it.count }.take(5)
 
         val topByDevices = organizations.map { org ->
-            OrganizationStatDTO(org.name, deviceRepository.findByOrganizationId(org.id!!).size.toLong())
+            OrganizationStatDTO(org.corporateName, deviceRepository.findByOrganizationId(org.id!!).size.toLong())
         }.sortedByDescending { it.count }.take(5)
 
         return DashboardDTO(

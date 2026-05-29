@@ -33,42 +33,42 @@ class DataSeeder(
             val commonPass = passwordEncoder.encode("123456")!!
 
             // Managers
-            collabRepo.save(Collaborator("Admin Gerente", "admin@rodojacto.com.br", commonPass, AccessLevel.MANAGER, matriz))
-            collabRepo.save(Collaborator("Carlos Gerente", "carlos@rodojacto.com.br", commonPass, AccessLevel.MANAGER, sul))
+            collabRepo.save(Collaborator(fullName = "Admin Gerente", email = "admin@rodojacto.com.br", password = commonPass, accessLevel = AccessLevel.MANAGER, organization = matriz))
+            collabRepo.save(Collaborator(fullName = "Carlos Gerente", email = "carlos@rodojacto.com.br", password = commonPass, accessLevel = AccessLevel.MANAGER, organization = sul))
 
             // Operadores (Matriz) - 5 colaboradores
             repeat(5) { i ->
-                collabRepo.save(Collaborator("Op Matriz $i", "op.matriz$i@rodojacto.com.br", commonPass, AccessLevel.OPERATOR, matriz))
+                collabRepo.save(Collaborator(fullName = "Op Matriz $i", email = "op.matriz$i@rodojacto.com.br", password = commonPass, accessLevel = AccessLevel.OPERATOR, organization = matriz))
             }
 
             // Operadores (Filial Sul) - 3 colaboradores
             repeat(3) { i ->
-                collabRepo.save(Collaborator("Op Sul $i", "op.sul$i@rodojacto.com.br", commonPass, AccessLevel.OPERATOR, sul))
+                collabRepo.save(Collaborator(fullName = "Op Sul $i", email = "op.sul$i@rodojacto.com.br", password = commonPass, accessLevel = AccessLevel.OPERATOR, organization = sul))
             }
 
             // Operadores (Filial Norte) - 8 colaboradores (Será Top 1)
             repeat(8) { i ->
-                collabRepo.save(Collaborator("Op Norte $i", "op.norte$i@rodojacto.com.br", commonPass, AccessLevel.OPERATOR, norte))
+                collabRepo.save(Collaborator(fullName = "Op Norte $i", email = "op.norte$i@rodojacto.com.br", password = commonPass, accessLevel = AccessLevel.OPERATOR, organization = norte))
             }
 
             // 3. Dispositivos
             // Matriz - 2 dispositivos
-            deviceRepo.save(Device("Coletor Zebra TC21", "Z-001", matriz))
-            deviceRepo.save(Device("Coletor Zebra TC21", "Z-002", matriz))
+            deviceRepo.save(Device(model = "Coletor Zebra TC21", assetTag = "Z-001", organization = matriz))
+            deviceRepo.save(Device(model = "Coletor Zebra TC21", assetTag = "Z-002", organization = matriz))
 
             // Sul - 10 dispositivos (Será Top 1)
             repeat(10) { i ->
-                deviceRepo.save(Device("Tablet Samsung Tab A", "S-01$i", sul))
+                deviceRepo.save(Device(model = "Tablet Samsung Tab A", assetTag = "S-01$i", organization = sul))
             }
 
             // Oeste - 6 dispositivos
             repeat(6) { i ->
-                deviceRepo.save(Device("Leitor Honeywell", "H-02$i", oeste))
+                deviceRepo.save(Device(model = "Leitor Honeywell", assetTag = "H-02$i", organization = oeste))
             }
 
             // Leste - 4 dispositivos
             repeat(4) { i ->
-                deviceRepo.save(Device("Coletor CipherLab", "C-03$i", leste))
+                deviceRepo.save(Device(model = "Coletor CipherLab", assetTag = "C-03$i", organization = leste))
             }
             
             println("✅ Seed da base de dados expandido com sucesso!")
