@@ -1,0 +1,60 @@
+# ARQUITETURA DO PROJETO RODOJACTO
+
+Este documento detalha a arquitetura do sistema Rodojacto, com foco especial na estrutura e padrões aplicados no Back-end.
+
+## 1. Visão Geral da Arquitetura
+
+O sistema adota uma arquitetura de microsserviços simplificada (monolito modular), composta por:
+- **Client-side:** Interface SPA desenvolvida em Angular.
+- **Server-side:** API RESTful robusta desenvolvida com Spring Boot e Kotlin.
+- **Persistence:** Banco de dados relacional MySQL gerenciado via Docker.
+
+---
+
+## 2. Back-end: Detalhamento Técnico
+
+O Back-end foi projetado seguindo os princípios de Separação de Preocupações (SoC) e Clean Architecture adaptada para o ecossistema Spring.
+
+### 2.1. Camadas da Aplicação (Packages)
+
+- **`config`**: Definições de infraestrutura e inicialização (Beans, CORS, Seeding).
+- **`controllers`**: Porta de entrada da aplicação. Gerencia os endpoints REST e validações de entrada via DTOs.
+- **`services`**: Camada de lógica de negócio central. É aqui que as regras de filtragem (como a restrição de visualização do OPERATOR) e orquestração de dados residem.
+- **`repositories`**: Interfaces que estendem Spring Data JPA para comunicação com o MySQL.
+- **`models`**: Entidades persistentes que representam o esquema do banco de dados.
+- **`dtos`**: Objetos de Transferência de Dados, garantindo que informações sensíveis não sejam expostas diretamente.
+- **`security`**: Implementação de segurança via JWT, incluindo filtros de autenticação e utilitários de contexto de usuário.
+- **`mappers`**: Conversão eficiente entre Entidades e DTOs.
+- **`exceptions`**: Tratamento global de erros e retorno de mensagens amigáveis via HTTP.
+
+### 2.2. Padrões e Estratégias Aplicadas
+
+1.  **Soft Delete:** Todas as entidades principais utilizam deleção lógica (`is_deleted`), garantindo que dados históricos não sejam perdidos permanentemente por acidente.
+2.  **Segurança Multicamadas:**
+    - Autenticação via JWT Stateless.
+    - Autorização via `SecurityUtils` e filtragem dinâmica na camada de serviço.
+3.  **Transacionalidade Automatizada:** Uso extensivo de `@Transactional` para garantir a atomicidade das operações, especialmente durante o processo de *Seeding*.
+4.  **Imutabilidade e Segurança de Tipos:** Aproveitamento dos recursos do Kotlin (Data Classes, Null Safety) para reduzir erros de tempo de execução comuns em Java.
+
+---
+
+## 3. Front-end: Integração e UX
+
+O Front-end consome a API REST de forma reativa, utilizando:
+- **Angular Signals:** Para gerenciamento de estado de alta performance.
+- **Guards e Interceptors:** Para proteção de rotas e injeção automática do Token JWT em cada requisição.
+- **Interface Adaptativa:** Ocultação de elementos administrativos (`isOperator`) baseada no payload do JWT.
+
+---
+
+## 4. Fluxo de Dados de Segurança (Exemplo)
+
+1.  **Login:** Usuário envia credenciais -> Back-end valida e gera JWT assinado com Claims (Role, OrgID).
+2.  **Requisição:** Front-end anexa JWT no Header `Authorization`.
+3.  **Processamento:** `SecurityFilter` intercepta -> Valida Token -> Injeta Usuário no Contexto do Spring.
+4.  **Lógica:** O Service consulta `SecurityUtils` -> Se for `OPERATOR`, aplica filtro `WHERE organization_id = user_org_id`.
+5.  **Resposta:** Dados filtrados retornam ao Front-end de forma transparente.
+
+---
+
+Este projeto prioriza a robustez e a escalabilidade, mantendo uma base de código limpa e documentada.

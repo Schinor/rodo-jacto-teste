@@ -37,7 +37,7 @@ Para a correta execução do ambiente, é necessária a instalação das seguint
 *   `/rodojacto`: Código fonte do serviço back-end (Spring Boot).
 *   `/front-end`: Código fonte da interface do usuário (Angular).
 *   `docker-compose.yml`: Arquivo de orquestração dos serviços.
-*   `.env`: Configurações de variáveis de ambiente para o banco de dados.
+*   `.env.example`: Exemplo de configurações de variáveis de ambiente.
 
 ## 4. Instruções de Execução via Docker (Recomendado)
 
@@ -46,12 +46,13 @@ O projeto está configurado para ser executado integralmente via Docker Compose,
 ### Passos para execução:
 
 1.  Certifique-se de que as portas 80, 8080 e 3306 não estejam sendo utilizadas por outros serviços em sua máquina host.
-2.  Navegue até a raiz do projeto no terminal.
-3.  Execute o comando abaixo para iniciar o provisionamento:
+2.  Crie um arquivo `.env` baseado no `.env.example`.
+3.  Navegue até a raiz do projeto no terminal.
+4.  Execute o comando abaixo para iniciar o provisionamento:
     ```bash
     docker-compose up --build
     ```
-4.  Aguarde a conclusão do build e a inicialização dos serviços. O backend aguardará a prontidão do banco de dados antes de iniciar.
+5.  Aguarde a conclusão do build e a inicialização dos serviços. O backend aguardará a prontidão do banco de dados antes de iniciar.
 
 ### Acesso aos Serviços:
 *   **Interface Web (Front-end):** http://localhost (Porta 80)
@@ -67,20 +68,28 @@ Esta chave está configurada no arquivo `docker-compose.yml` e é injetada no am
 
 ## 6. Credenciais de Banco de Dados
 
-As credenciais padrão configuradas no arquivo `.env` e utilizadas pelo sistema são:
+As credenciais padrão sugeridas para o arquivo `.env` são:
 *   **Database:** rodojacto_db
 *   **User:** admin
 *   **Password:** rodo1234jacto
-*   **Root Password:** rootpassword
 
-## 8. Credenciais para Teste (Dados Iniciais)
+## 7. Carga Inicial de Dados (Seeding)
 
-O sistema conta com um serviço de *seeding* automático que popula o banco de dados em sua primeira execução. As seguintes credenciais podem ser utilizadas para acesso ao sistema:
+O sistema possui um mecanismo de **Seed Automático** (`DataSeeder`) que popula a base de dados na primeira inicialização.
+
+**Configurações do Seeding:**
+- Execução transacional (@Transactional) para garantir consistência.
+- Logs detalhados visíveis via `docker logs rodojacto_backend`.
+- Popula: 5 Organizações, Colaboradores (Gerentes e Operadores) e Dispositivos.
+
+## 8. Credenciais para Teste
 
 ### Perfil Gerente (Acesso Global)
 *   **E-mail:** admin@rodojacto.com.br
 *   **Senha:** 123456
 
 ### Perfil Operador (Acesso Restrito)
-*   **E-mail:** joao@rodojacto.com.br
+*   **E-mail:** carlos@rodojacto.com.br (Gerente da Filial Sul) ou e-mails de operadores como `op.matriz0@rodojacto.com.br`.
 *   **Senha:** 123456
+
+> **Nota sobre Segurança:** Usuários com perfil `OPERATOR` possuem visualização restrita apenas à organização a que pertencem, com interface adaptada para ocultar ações administrativas.
