@@ -1,0 +1,42 @@
+<div class="container">
+  <div class="header">
+    <h1>Dispositivos</h1>
+    <a routerLink="/devices/new" class="btn btn-primary">Novo Dispositivo</a>
+  </div>
+
+  @if (isLoading) {
+    <p>Carregando...</p>
+  } @else if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  } @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Modelo</th>
+          <th>Etiqueta de Ativo</th>
+          <th>Org ID</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (device of devices; track device.id) {
+          <tr>
+            <td>{{ device.id }}</td>
+            <td>{{ device.model }}</td>
+            <td>{{ device.assetTag }}</td>
+            <td>{{ device.organizationId }}</td>
+            <td>
+              <a [routerLink]="['/devices/edit', device.id]" class="btn btn-sm btn-edit">Editar</a>
+              <button (click)="onDelete(device.id)" class="btn btn-sm btn-delete">Excluir</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">Nenhum dispositivo encontrado.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
