@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -22,48 +22,48 @@ export class OrganizationForm implements OnInit {
     registrationCode: ['', [Validators.required]]
   });
 
-  isEditMode = false;
+  isEditMode = signal<boolean>(false);
   organizationId: number | null = null;
-  isLoading = false;
-  errorMessage: string | null = null;
+  isLoading = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.isEditMode = true;
+      this.isEditMode.set(true);
       this.organizationId = Number(id);
       this.loadOrganization(this.organizationId);
     }
   }
 
   loadOrganization(id: number): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.organizationService.findById(id).subscribe({
       next: (data) => {
         this.organizationForm.patchValue(data);
-        this.isLoading = false;
+        this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage = 'Erro ao carregar dados da organização.';
-        this.isLoading = false;
+        this.errorMessage.set('Erro ao carregar dados da organização.');
+        this.isLoading.set(false);
       }
     });
   }
 
   onSubmit(): void {
     if (this.organizationForm.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       const data = this.organizationForm.getRawValue();
 
-      const request = this.isEditMode && this.organizationId
+      const request = this.isEditMode() && this.organizationId
         ? this.organizationService.update(this.organizationId, data)
         : this.organizationService.create(data);
 
       request.subscribe({
         next: () => this.router.navigate(['/organizations']),
         error: () => {
-          this.errorMessage = 'Erro ao salvar organização.';
-          this.isLoading = false;
+          this.errorMessage.set('Erro ao salvar organização.');
+          this.isLoading.set(false);
         }
       });
     }

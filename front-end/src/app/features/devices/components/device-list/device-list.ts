@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -18,9 +18,9 @@ export class DeviceList implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private subscription = new Subscription();
   
-  devices: Device[] = [];
-  isLoading = true;
-  errorMessage: string | null = null;
+  devices = signal<Device[]>([]);
+  isLoading = signal<boolean>(true);
+  errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadDevices();
@@ -40,15 +40,15 @@ export class DeviceList implements OnInit, OnDestroy {
   }
 
   loadDevices(): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.deviceService.findAll().subscribe({
       next: (data) => {
-        this.devices = data;
-        this.isLoading = false;
+        this.devices.set(data);
+        this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage = 'Erro ao carregar dispositivos.';
-        this.isLoading = false;
+        this.errorMessage.set('Erro ao carregar dispositivos.');
+        this.isLoading.set(false);
       }
     });
   }

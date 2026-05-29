@@ -4,10 +4,10 @@
     <a routerLink="/organizations/new" class="btn btn-primary">Nova Organização</a>
   </div>
 
-  @if (isLoading) {
+  @if (isLoading()) {
     <p>Carregando...</p>
-  } @else if (errorMessage) {
-    <p class="error">{{ errorMessage }}</p>
+  } @else if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
   } @else {
     <table class="table">
       <thead>
@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (org of organizations; track org.id) {
+        @for (org of organizations(); track org.id) {
           <tr>
             <td>{{ org.id }}</td>
             <td>{{ org.corporateName }}</td>
@@ -38,3 +38,4 @@
     </table>
   }
 </div>
+

@@ -4,10 +4,10 @@
     <a routerLink="/collaborators/new" class="btn btn-primary">Novo Colaborador</a>
   </div>
 
-  @if (isLoading) {
+  @if (isLoading()) {
     <p>Carregando...</p>
-  } @else if (errorMessage) {
-    <p class="error">{{ errorMessage }}</p>
+  } @else if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
   } @else {
     <table class="table">
       <thead>
@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (col of collaborators; track col.id) {
+        @for (col of collaborators(); track col.id) {
           <tr>
             <td>{{ col.fullName }}</td>
             <td>{{ col.email }}</td>

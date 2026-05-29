@@ -1,8 +1,8 @@
 <div class="container">
-  <h1>{{ isEditMode ? 'Editar' : 'Novo' }} Dispositivo</h1>
+  <h1>{{ isEditMode() ? 'Editar' : 'Novo' }} Dispositivo</h1>
 
-  @if (errorMessage) {
-    <p class="error">{{ errorMessage }}</p>
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
   }
 
   <form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
@@ -20,14 +20,14 @@
       <label for="organizationId">Organização</label>
       <select id="organizationId" formControlName="organizationId" class="form-control">
         <option [value]="0">Selecione uma organização</option>
-        @for (org of organizations; track org.id) {
+        @for (org of organizations(); track org.id) {
           <option [value]="org.id">{{ org.corporateName }}</option>
         }
       </select>
     </div>
 
     <div class="actions">
-      <button type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || isLoading">
+      <button type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || isLoading()">
         Salvar
       </button>
       <a routerLink="/devices" class="btn btn-secondary">Cancelar</a>

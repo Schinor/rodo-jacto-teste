@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -18,9 +18,9 @@ export class OrganizationList implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private subscription = new Subscription();
   
-  organizations: Organization[] = [];
-  isLoading = true;
-  errorMessage: string | null = null;
+  organizations = signal<Organization[]>([]);
+  isLoading = signal<boolean>(true);
+  errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadOrganizations();
@@ -40,15 +40,15 @@ export class OrganizationList implements OnInit, OnDestroy {
   }
 
   loadOrganizations(): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.organizationService.findAll().subscribe({
       next: (data) => {
-        this.organizations = data;
-        this.isLoading = false;
+        this.organizations.set(data);
+        this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage = 'Erro ao carregar organizações.';
-        this.isLoading = false;
+        this.errorMessage.set('Erro ao carregar organizações.');
+        this.isLoading.set(false);
       }
     });
   }

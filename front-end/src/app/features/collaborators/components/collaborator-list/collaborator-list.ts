@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -18,9 +18,9 @@ export class CollaboratorList implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private subscription = new Subscription();
   
-  collaborators: Collaborator[] = [];
-  isLoading = true;
-  errorMessage: string | null = null;
+  collaborators = signal<Collaborator[]>([]);
+  isLoading = signal<boolean>(true);
+  errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadCollaborators();
@@ -40,15 +40,15 @@ export class CollaboratorList implements OnInit, OnDestroy {
   }
 
   loadCollaborators(): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.collaboratorService.findAll().subscribe({
       next: (data) => {
-        this.collaborators = data;
-        this.isLoading = false;
+        this.collaborators.set(data);
+        this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage = 'Erro ao carregar colaboradores.';
-        this.isLoading = false;
+        this.errorMessage.set('Erro ao carregar colaboradores.');
+        this.isLoading.set(false);
       }
     });
   }

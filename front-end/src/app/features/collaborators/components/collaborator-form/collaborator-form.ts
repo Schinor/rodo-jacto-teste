@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -29,17 +29,17 @@ export class CollaboratorForm implements OnInit {
     organizationId: [0, [Validators.required, Validators.min(1)]]
   });
 
-  organizations: Organization[] = [];
-  isEditMode = false;
+  organizations = signal<Organization[]>([]);
+  isEditMode = signal<boolean>(false);
   collaboratorId: number | null = null;
-  isLoading = false;
-  errorMessage: string | null = null;
+  isLoading = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadOrganizations();
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.isEditMode = true;
+      this.isEditMode.set(true);
       this.collaboratorId = Number(id);
       this.loadCollaborator(this.collaboratorId);
       this.collaboratorForm.get('password')?.clearValidators();
@@ -50,13 +50,13 @@ export class CollaboratorForm implements OnInit {
 
   loadOrganizations(): void {
     this.organizationService.findAll().subscribe({
-      next: (data) => this.organizations = data,
-      error: () => this.errorMessage = 'Erro ao carregar organizações.'
+      next: (data) => this.organizations.set(data),
+      error: () => this.errorMessage.set('Erro ao carregar organizações.')
     });
   }
 
   loadCollaborator(id: number): void {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.collaboratorService.findById(id).subscribe({
       next: (data) => {
         this.collaboratorForm.patchValue({
@@ -65,18 +65,18 @@ export class CollaboratorForm implements OnInit {
           accessLevel: data.accessLevel,
           organizationId: data.organizationId
         });
-        this.isLoading = false;
+        this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage = 'Erro ao carregar dados do colaborador.';
-        this.isLoading = false;
+        this.errorMessage.set('Erro ao carregar dados do colaborador.');
+        this.isLoading.set(false);
       }
     });
   }
 
   onSubmit(): void {
     if (this.collaboratorForm.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       const rawValues = this.collaboratorForm.getRawValue();
       
       const data: CollaboratorRequest = {
@@ -87,15 +87,15 @@ export class CollaboratorForm implements OnInit {
         password: rawValues.password || undefined
       };
 
-      const request = this.isEditMode && this.collaboratorId
+      const request = this.isEditMode() && this.collaboratorId
         ? this.collaboratorService.update(this.collaboratorId, data)
         : this.collaboratorService.create(data);
 
       request.subscribe({
         next: () => this.router.navigate(['/collaborators']),
         error: () => {
-          this.errorMessage = 'Erro ao salvar colaborador.';
-          this.isLoading = false;
+          this.errorMessage.set('Erro ao salvar colaborador.');
+          this.isLoading.set(false);
         }
       });
     }
