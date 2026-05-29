@@ -50,7 +50,7 @@ O projeto está configurado para ser executado integralmente via Docker Compose,
 3.  Navegue até a raiz do projeto no terminal.
 4.  Execute o comando abaixo para iniciar o provisionamento:
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
 5.  Aguarde a conclusão do build e a inicialização dos serviços. O backend aguardará a prontidão do banco de dados antes de iniciar.
 
