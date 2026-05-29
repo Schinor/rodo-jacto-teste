@@ -45,7 +45,8 @@ class SecurityConfig(
         val source = UrlBasedCorsConfigurationSource()
         val config = CorsConfiguration()
         config.allowCredentials = true
-        config.addAllowedOrigin("http://localhost:4200") // Origem do seu Angular
+        config.addAllowedOrigin("http://localhost:4200") // Angular local dev
+        config.addAllowedOrigin("http://localhost")      // Docker frontend
         config.addAllowedHeader("*")
         config.addAllowedMethod("*")
         source.registerCorsConfiguration("/**", config)
