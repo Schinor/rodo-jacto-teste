@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { DeviceService } from '../../services/device';
 import { Device } from '../../models/device.models';
+import { AuthService } from '../../../../features/auth/services/auth';
 
 @Component({
   selector: 'app-device-list',
@@ -16,6 +17,7 @@ import { Device } from '../../models/device.models';
 export class DeviceList implements OnInit, OnDestroy {
   private readonly deviceService = inject(DeviceService);
   private readonly router = inject(Router);
+  protected readonly authService = inject(AuthService);
   private subscription = new Subscription();
   
   devices = signal<Device[]>([]);

@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <div class="ranking-grid" *ngIf="stats()">
+  <div class="ranking-grid" *ngIf="stats() && authService.isManager()">
     <div class="ranking-card">
       <h3>Top 5 Organizações por Colaboradores</h3>
       <ul>

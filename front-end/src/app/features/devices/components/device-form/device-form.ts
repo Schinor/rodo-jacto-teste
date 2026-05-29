@@ -5,6 +5,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DeviceService } from '../../services/device';
 import { OrganizationService } from '../../../organizations/services/organization';
 import { Organization } from '../../../organizations/models/organization.models';
+import { DeviceRequest } from '../../models/device.models';
+import { AuthService } from '../../../../features/auth/services/auth';
 
 @Component({
   selector: 'app-device-form',
@@ -19,6 +21,7 @@ export class DeviceForm implements OnInit {
   private readonly organizationService = inject(OrganizationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  protected readonly authService = inject(AuthService);
 
   deviceForm = this.fb.group({
     model: ['', [Validators.required]],
@@ -44,7 +47,12 @@ export class DeviceForm implements OnInit {
 
   loadOrganizations(): void {
     this.organizationService.findAll().subscribe({
-      next: (data) => this.organizations.set(data),
+      next: (data) => {
+        this.organizations.set(data);
+        if (this.authService.isOperator() && !this.isEditMode() && data.length > 0) {
+          this.deviceForm.patchValue({ organizationId: data[0].id });
+        }
+      },
       error: () => this.errorMessage.set('Erro ao carregar organizações.')
     });
   }
@@ -53,11 +61,16 @@ export class DeviceForm implements OnInit {
     this.isLoading.set(true);
     this.deviceService.findById(id).subscribe({
       next: (data) => {
-        this.deviceForm.patchValue(data);
+        this.deviceForm.patchValue({
+          model: data.model,
+          assetTag: data.assetTag,
+          organizationId: data.organizationId
+        });
         this.isLoading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('Erro ao carregar dados do dispositivo.');
+      error: (err) => {
+        const msg = err.error?.message || 'Erro ao carregar dados do dispositivo.';
+        this.errorMessage.set(msg);
         this.isLoading.set(false);
       }
     });
@@ -66,7 +79,7 @@ export class DeviceForm implements OnInit {
   onSubmit(): void {
     if (this.deviceForm.valid) {
       this.isLoading.set(true);
-      const data = this.deviceForm.getRawValue();
+      const data: DeviceRequest = this.deviceForm.getRawValue();
 
       const request = this.isEditMode() && this.deviceId
         ? this.deviceService.update(this.deviceId, data)
@@ -74,8 +87,9 @@ export class DeviceForm implements OnInit {
 
       request.subscribe({
         next: () => this.router.navigate(['/devices']),
-        error: () => {
-          this.errorMessage.set('Erro ao salvar dispositivo.');
+        error: (err) => {
+          const msg = err.error?.message || 'Erro ao salvar dispositivo.';
+          this.errorMessage.set(msg);
           this.isLoading.set(false);
         }
       });

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { OrganizationService } from '../../services/organization';
+import { AuthService } from '../../../../features/auth/services/auth';
 
 @Component({
   selector: 'app-organization-form',
@@ -16,6 +17,7 @@ export class OrganizationForm implements OnInit {
   private readonly organizationService = inject(OrganizationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  protected readonly authService = inject(AuthService);
 
   organizationForm = this.fb.group({
     corporateName: ['', [Validators.required]],
@@ -43,8 +45,9 @@ export class OrganizationForm implements OnInit {
         this.organizationForm.patchValue(data);
         this.isLoading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('Erro ao carregar dados da organização.');
+      error: (err) => {
+        const msg = err.error?.message || 'Erro ao carregar dados da organização.';
+        this.errorMessage.set(msg);
         this.isLoading.set(false);
       }
     });
@@ -61,8 +64,9 @@ export class OrganizationForm implements OnInit {
 
       request.subscribe({
         next: () => this.router.navigate(['/organizations']),
-        error: () => {
-          this.errorMessage.set('Erro ao salvar organização.');
+        error: (err) => {
+          const msg = err.error?.message || 'Erro ao salvar organização.';
+          this.errorMessage.set(msg);
           this.isLoading.set(false);
         }
       });

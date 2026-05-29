@@ -14,8 +14,7 @@
         <tr>
           <th>ID</th>
           <th>Modelo</th>
-          <th>Etiqueta de Ativo</th>
-          <th>Org ID</th>
+          <th>Patrimônio</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -25,15 +24,14 @@
             <td>{{ device.id }}</td>
             <td>{{ device.model }}</td>
             <td>{{ device.assetTag }}</td>
-            <td>{{ device.organizationId }}</td>
             <td>
               <a [routerLink]="['/devices/edit', device.id]" class="btn btn-sm btn-edit">Editar</a>
-              <button (click)="onDelete(device.id)" class="btn btn-sm btn-delete">Excluir</button>
+              <button *ngIf="authService.isManager()" (click)="onDelete(device.id)" class="btn btn-sm btn-delete">Excluir</button>
             </td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="5">Nenhum dispositivo encontrado.</td>
+            <td colspan="4">Nenhum dispositivo encontrado.</td>
           </tr>
         }
       </tbody>

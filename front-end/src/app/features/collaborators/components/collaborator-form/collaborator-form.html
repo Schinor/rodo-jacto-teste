@@ -1,51 +1,51 @@
 <div class="container">
-  <h1>{{ isEditMode() ? 'Editar' : 'Novo' }} Colaborador</h1>
+  <div class="form-card">
+    <h1>{{ isEditMode() ? 'Editar' : 'Novo' }} Colaborador</h1>
 
-  @if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
-  }
-
-  <form [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="fullName">Nome Completo</label>
-      <input id="fullName" type="text" formControlName="fullName" class="form-control">
-    </div>
-
-    <div class="form-group">
-      <label for="email">E-mail</label>
-      <input id="email" type="email" formControlName="email" class="form-control">
-    </div>
-
-    @if (!isEditMode()) {
+    <form [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="password">Senha</label>
-        <input id="password" type="password" formControlName="password" class="form-control">
+        <label for="fullName">Nome Completo</label>
+        <input type="text" id="fullName" formControlName="fullName" placeholder="Digite o nome completo">
       </div>
-    }
 
-    <div class="form-group">
-      <label for="accessLevel">Nível de Acesso</label>
-      <select id="accessLevel" formControlName="accessLevel" class="form-control">
-        <option value="MANAGER">Gerente (MANAGER)</option>
-        <option value="OPERATOR">Operador (OPERATOR)</option>
-      </select>
-    </div>
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" formControlName="email" placeholder="email@exemplo.com">
+      </div>
 
-    <div class="form-group">
-      <label for="organizationId">Organização</label>
-      <select id="organizationId" formControlName="organizationId" class="form-control">
-        <option [value]="0">Selecione uma organização</option>
-        @for (org of organizations(); track org.id) {
-          <option [value]="org.id">{{ org.corporateName }}</option>
-        }
-      </select>
-    </div>
+      <div class="form-group">
+        <label for="password">Senha {{ isEditMode() ? '(deixe em branco para manter)' : '' }}</label>
+        <input type="password" id="password" formControlName="password" placeholder="Mínimo 6 caracteres">
+      </div>
 
-    <div class="actions">
-      <button type="submit" class="btn btn-primary" [disabled]="collaboratorForm.invalid || isLoading()">
-        Salvar
-      </button>
-      <a routerLink="/collaborators" class="btn btn-secondary">Cancelar</a>
-    </div>
-  </form>
+      <div class="form-group">
+        <label for="accessLevel">Nível de Acesso</label>
+        <select id="accessLevel" formControlName="accessLevel">
+          <option value="OPERATOR">Operador</option>
+          <option value="MANAGER" *ngIf="authService.isManager()">Gerente (Acesso Total)</option>
+        </select>
+        <p class="help-text" *ngIf="authService.isOperator()">Apenas gerentes podem criar outros gerentes.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="organization">Organização</label>
+        <!-- Se for OPERATOR, o campo fica desabilitado pois ele só pode usar a dele -->
+        <select id="organization" formControlName="organizationId" [attr.disabled]="authService.isOperator() ? true : null">
+          <option [value]="0" disabled>Selecione uma organização</option>
+          @for (org of organizations(); track org.id) {
+            <option [value]="org.id">{{ org.corporateName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" routerLink="/collaborators" class="btn btn-secondary" [disabled]="isLoading()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="collaboratorForm.invalid || isLoading()">
+          {{ isLoading() ? 'Salvando...' : 'Salvar Colaborador' }}
+        </button>
+      </div>
+
+      <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+    </form>
+  </div>
 </div>

@@ -6,6 +6,7 @@ import { CollaboratorService } from '../../services/collaborator';
 import { OrganizationService } from '../../../organizations/services/organization';
 import { Organization } from '../../../organizations/models/organization.models';
 import { AccessLevel, CollaboratorRequest } from '../../models/collaborator.models';
+import { AuthService } from '../../../../features/auth/services/auth';
 
 @Component({
   selector: 'app-collaborator-form',
@@ -20,6 +21,7 @@ export class CollaboratorForm implements OnInit {
   private readonly organizationService = inject(OrganizationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  protected readonly authService = inject(AuthService);
 
   collaboratorForm = this.fb.group({
     fullName: ['', [Validators.required]],
@@ -50,7 +52,13 @@ export class CollaboratorForm implements OnInit {
 
   loadOrganizations(): void {
     this.organizationService.findAll().subscribe({
-      next: (data) => this.organizations.set(data),
+      next: (data) => {
+        this.organizations.set(data);
+        // Se for OPERATOR e estiver criando um novo, pré-seleciona a única organização disponível
+        if (this.authService.isOperator() && !this.isEditMode() && data.length > 0) {
+          this.collaboratorForm.patchValue({ organizationId: data[0].id });
+        }
+      },
       error: () => this.errorMessage.set('Erro ao carregar organizações.')
     });
   }
@@ -67,8 +75,9 @@ export class CollaboratorForm implements OnInit {
         });
         this.isLoading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('Erro ao carregar dados do colaborador.');
+      error: (err) => {
+        const msg = err.error?.message || 'Erro ao carregar dados do colaborador.';
+        this.errorMessage.set(msg);
         this.isLoading.set(false);
       }
     });
@@ -93,8 +102,9 @@ export class CollaboratorForm implements OnInit {
 
       request.subscribe({
         next: () => this.router.navigate(['/collaborators']),
-        error: () => {
-          this.errorMessage.set('Erro ao salvar colaborador.');
+        error: (err) => {
+          const msg = err.error?.message || 'Erro ao salvar colaborador.';
+          this.errorMessage.set(msg);
           this.isLoading.set(false);
         }
       });

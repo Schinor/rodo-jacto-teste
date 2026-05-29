@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
 import { authGuard } from './core/guards/auth-guard';
+import { managerGuard } from './core/guards/manager-guard';
 import { DashboardHome } from './features/dashboard/components/dashboard-home/dashboard-home';
 import { OrganizationList } from './features/organizations/components/organization-list/organization-list';
 import { OrganizationForm } from './features/organizations/components/organization-form/organization-form';
@@ -18,7 +19,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardHome },
       
       { path: 'organizations', component: OrganizationList },
-      { path: 'organizations/new', component: OrganizationForm },
+      { path: 'organizations/new', component: OrganizationForm, canActivate: [managerGuard] },
       { path: 'organizations/edit/:id', component: OrganizationForm },
       
       { path: 'collaborators', component: CollaboratorList },

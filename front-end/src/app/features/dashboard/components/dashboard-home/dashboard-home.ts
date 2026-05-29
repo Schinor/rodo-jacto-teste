@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard';
 import { DashboardStats } from '../../models/dashboard.models';
+import { AuthService } from '../../../../features/auth/services/auth';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -12,6 +13,7 @@ import { DashboardStats } from '../../models/dashboard.models';
 })
 export class DashboardHome implements OnInit {
   private readonly dashboardService = inject(DashboardService);
+  protected readonly authService = inject(AuthService);
   
   // Usando Signals para garantir que o Angular detecte a mudança de estado imediatamente
   stats = signal<DashboardStats | null>(null);

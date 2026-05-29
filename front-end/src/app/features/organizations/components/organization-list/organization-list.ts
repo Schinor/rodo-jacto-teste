@@ -4,6 +4,7 @@ import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { OrganizationService } from '../../services/organization';
+import { AuthService } from '../../../auth/services/auth';
 import { Organization } from '../../models/organization.models';
 
 @Component({
@@ -15,12 +16,15 @@ import { Organization } from '../../models/organization.models';
 })
 export class OrganizationList implements OnInit, OnDestroy {
   private readonly organizationService = inject(OrganizationService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private subscription = new Subscription();
   
   organizations = signal<Organization[]>([]);
   isLoading = signal<boolean>(true);
   errorMessage = signal<string | null>(null);
+
+  isOperator = this.authService.isOperator;
 
   ngOnInit(): void {
     this.loadOrganizations();

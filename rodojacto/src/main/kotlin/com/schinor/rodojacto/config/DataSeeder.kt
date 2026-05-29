@@ -10,6 +10,8 @@ import com.schinor.rodojacto.repositories.OrganizationRepository
 import org.springframework.boot.CommandLineRunner
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import org.slf4j.LoggerFactory
 
 @Component
 class DataSeeder(
@@ -19,8 +21,13 @@ class DataSeeder(
     private val passwordEncoder: PasswordEncoder
 ) : CommandLineRunner {
 
+    private val logger = LoggerFactory.getLogger(DataSeeder::class.java)
+
+    @Transactional
     override fun run(vararg args: String) {
+        logger.info("Verificando necessidade de seed na base de dados...")
         if (orgRepo.count() == 0L) {
+            logger.info("Iniciando seed da base de dados...")
             
             // 1. Organizações
             val matriz = orgRepo.save(Organization(corporateName = "Matriz Rodojacto", registrationCode = "CNPJ-0001"))

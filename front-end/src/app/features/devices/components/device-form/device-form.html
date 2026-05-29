@@ -1,36 +1,37 @@
 <div class="container">
-  <h1>{{ isEditMode() ? 'Editar' : 'Novo' }} Dispositivo</h1>
+  <div class="form-card">
+    <h1>{{ isEditMode() ? 'Editar' : 'Novo' }} Dispositivo</h1>
 
-  @if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
-  }
+    <form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="model">Modelo</label>
+        <input type="text" id="model" formControlName="model" placeholder="Ex: Coletor Zebra TC21">
+      </div>
 
-  <form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="model">Modelo</label>
-      <input id="model" type="text" formControlName="model" class="form-control">
-    </div>
+      <div class="form-group">
+        <label for="assetTag">Patrimônio / Asset Tag</label>
+        <input type="text" id="assetTag" formControlName="assetTag" placeholder="Ex: TAG-12345">
+      </div>
 
-    <div class="form-group">
-      <label for="assetTag">Etiqueta de Ativo</label>
-      <input id="assetTag" type="text" formControlName="assetTag" class="form-control">
-    </div>
+      <div class="form-group">
+        <label for="organization">Organização</label>
+        <!-- Se for OPERATOR, o campo fica desabilitado pois ele só pode usar a dele -->
+        <select id="organization" formControlName="organizationId" [attr.disabled]="authService.isOperator() ? true : null">
+          <option [value]="0" disabled>Selecione uma organização</option>
+          @for (org of organizations(); track org.id) {
+            <option [value]="org.id">{{ org.corporateName }}</option>
+          }
+        </select>
+      </div>
 
-    <div class="form-group">
-      <label for="organizationId">Organização</label>
-      <select id="organizationId" formControlName="organizationId" class="form-control">
-        <option [value]="0">Selecione uma organização</option>
-        @for (org of organizations(); track org.id) {
-          <option [value]="org.id">{{ org.corporateName }}</option>
-        }
-      </select>
-    </div>
+      <div class="form-actions">
+        <button type="button" routerLink="/devices" class="btn btn-secondary" [disabled]="isLoading()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || isLoading()">
+          {{ isLoading() ? 'Salvando...' : 'Salvar Dispositivo' }}
+        </button>
+      </div>
 
-    <div class="actions">
-      <button type="submit" class="btn btn-primary" [disabled]="deviceForm.invalid || isLoading()">
-        Salvar
-      </button>
-      <a routerLink="/devices" class="btn btn-secondary">Cancelar</a>
-    </div>
-  </form>
+      <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+    </form>
+  </div>
 </div>

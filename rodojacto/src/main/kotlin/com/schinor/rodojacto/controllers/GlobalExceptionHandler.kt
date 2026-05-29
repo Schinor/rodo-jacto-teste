@@ -32,6 +32,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception::class)
     fun handleGenericException(ex: Exception): ResponseEntity<Map<String, String>> {
+        ex.printStackTrace()
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mapOf("error" to "Ocorreu um erro interno no servidor"))
     }
 }
