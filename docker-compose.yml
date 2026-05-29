@@ -12,6 +12,34 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  backend:
+    build: ./rodojacto
+    container_name: rodojacto_backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://db:3306/rodojacto_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_SECRET: dvgAvrK49yCXE1ioUupY9S6Ag971cG1GHsOC3alMrwjfzDIyba9RO1vwb4z6ecP6
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./front-end
+    container_name: rodojacto_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
 volumes:
   mysql_data:
