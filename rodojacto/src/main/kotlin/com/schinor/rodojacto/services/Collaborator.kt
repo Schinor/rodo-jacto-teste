@@ -51,11 +51,14 @@ class CollaboratorService(
     @Transactional
     fun create(dto: CollaboratorRequestDTO): CollaboratorResponseDTO {
         val organization = organizationService.getEntityById(dto.organizationId)
+        
+        // Na criação a senha é obrigatória
+        val password = dto.password ?: throw IllegalArgumentException("A senha é obrigatória na criação.")
 
         val collaborator = Collaborator(
             fullName = dto.fullName,
             email = dto.email,
-            password = passwordEncoder.encode(dto.password)!!,
+            password = passwordEncoder.encode(password)!!,
             accessLevel = dto.accessLevel,
             organization = organization
         )
@@ -69,9 +72,15 @@ class CollaboratorService(
 
         collaborator.fullName = dto.fullName
         collaborator.email = dto.email
-        // collaborator.password = dto.password (Atualização de senha costuma ser um endpoint separado)
         collaborator.accessLevel = dto.accessLevel
         collaborator.organization = organization
+        
+        // Atualiza a senha apenas se for enviada
+        dto.password?.let {
+            if (it.isNotBlank()) {
+                collaborator.password = passwordEncoder.encode(it)!!
+            }
+        }
 
         return repository.save(collaborator).toResponseDTO()
     }

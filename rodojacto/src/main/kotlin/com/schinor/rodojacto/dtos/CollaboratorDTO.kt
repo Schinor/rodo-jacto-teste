@@ -15,8 +15,8 @@ data class CollaboratorRequestDTO(
     @field:Email(message = "Formato de e-mail inválido")
     val email: String,
 
-    @field:NotBlank(message = "A senha é obrigatória")
-    val password: String,
+    // Senha opcional para permitir atualizações sem reenviar a senha
+    val password: String? = null,
 
     @field:NotNull(message = "O nível de acesso é obrigatório")
     val accessLevel: AccessLevel,
