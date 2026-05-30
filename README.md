@@ -7,73 +7,91 @@ Este documento fornece as instruções necessárias para a configuração, compi
 O desenvolvimento do sistema baseou-se nas seguintes tecnologias:
 
 ### Back-end
-*   **Linguagem:** Kotlin 2.2.21
-*   **Framework:** Spring Boot 4.0.6
-*   **Segurança:** Spring Security com autenticação baseada em JSON Web Tokens (JWT)
-*   **Persistência:** Spring Data JPA / Hibernate
-*   **Migrações de Banco de Dados:** Flyway
-*   **Gerenciamento de Dependências:** Gradle
+* **Linguagem:** Kotlin 2.2.21
+* **Framework:** Spring Boot 4.0.6
+* **Segurança:** Spring Security com autenticação baseada em JSON Web Tokens (JWT)
+* **Persistência:** Spring Data JPA / Hibernate
+* **Migrações de Banco de Dados:** Flyway
+* **Gerenciamento de Dependências:** Gradle
 
 ### Front-end
-*   **Framework:** Angular 21
-*   **Linguagem:** TypeScript
-*   **Estilização:** CSS (Vanilla)
-*   **Gerenciamento de Estado:** Angular Signals para reatividade otimizada
+* **Framework:** Angular 21
+* **Linguagem:** TypeScript
+* **Estilização:** CSS (Vanilla)
+* **Gerenciamento de Estado:** Angular Signals para reatividade otimizada
 
 ### Infraestrutura e Banco de Dados
-*   **Banco de Dados:** MySQL 8.0
-*   **Conteinerização:** Docker e Docker Compose
+* **Banco de Dados:** MySQL 8.0
+* **Conteinerização:** Docker e Docker Compose
 
 ## 2. Pré-requisitos
 
 Para a correta execução do ambiente, é necessária a instalação das seguintes ferramentas:
 
-*   Docker (versão 20.10 ou superior)
-*   Docker Compose (versão 2.0 ou superior)
-*   (Opcional para execução manual) Java JDK 21 e Node.js 22
+* Docker (versão 20.10 ou superior)
+* Docker Compose (versão 2.0 ou superior)
+* Git (para versionamento e clonagem do repositório)
+* (Opcional para execução manual) Java JDK 21 e Node.js 22
 
-## 3. Estrutura de Diretórios
+## 3. Clonagem do Repositório
 
-*   `/rodojacto`: Código fonte do serviço back-end (Spring Boot).
-*   `/front-end`: Código fonte da interface do usuário (Angular).
-*   `docker-compose.yml`: Arquivo de orquestração dos serviços.
-*   `.env.example`: Exemplo de configurações de variáveis de ambiente.
+Para configurar e executar o projeto em uma nova máquina de desenvolvimento, siga as instruções abaixo para clonar o código-fonte de forma correta:
 
-## 4. Instruções de Execução via Docker (Recomendado)
+### Passos para clonagem:
 
-O projeto está configurado para ser executado integralmente via Docker Compose, o que automatiza a configuração do banco de dados, compilação dos serviços e provisionamento da rede interna.
-
-### Passos para execução:
-
-1.  Certifique-se de que as portas 80, 8080 e 3306 não estejam sendo utilizadas por outros serviços em sua máquina host.
-2.  Crie um arquivo `.env` baseado no `.env.example`.
-3.  Navegue até a raiz do projeto no terminal.
-4.  Execute o comando abaixo para iniciar o provisionamento:
+1. Abra o terminal de linha de comando na máquina de destino.
+2. Navegue até o diretório onde deseja armazenar a pasta do projeto.
+3. Execute o comando `git clone` utilizando a URL do repositório (substitua pelo endereço real do seu servidor Git, seja GitHub, GitLab ou repositório privado):
     ```bash
-    docker compose up --build
+    git clone https://github.com/usuario/rodojacto.git
     ```
-5.  Aguarde a conclusão do build e a inicialização dos serviços. O backend aguardará a prontidão do banco de dados antes de iniciar.
+4. Após a conclusão do download, acesse o diretório raiz do projeto clonado para iniciar o processo de configuração:
+    ```bash
+    cd rodojacto
+    ```
 
-### Acesso aos Serviços:
-*   **Interface Web (Front-end):** http://localhost (Porta 80)
-*   **API (Back-end):** http://localhost:8080
-*   **Banco de Dados (MySQL):** localhost:3306
+## 4. Estrutura de Diretórios
 
-## 5. Configuração de Segurança (JWT)
+* `/rodojacto`: Código fonte do serviço back-end (Spring Boot).
+* `/front-end`: Código fonte da interface do usuário (Angular).
+* `docker-compose.yml`: Arquivo de orquestração dos serviços.
+* `.env.example`: Exemplo de configurações de variáveis de ambiente.
+
+## 5. Credenciais de Banco de Dados
+
+As credenciais padrão sugeridas para o arquivo `.env` são:
+* **Database:** rodojacto_db
+* **User:** admin
+* **Password:** rodo1234jacto
+
+## 6. Configuração de Segurança (JWT)
 
 O sistema utiliza a chave secreta definida abaixo para a assinatura e validação de tokens JWT:
 `dvgAvrK49yCXE1ioUupY9S6Ag971cG1GHsOC3alMrwjfzDIyba9RO1vwb4z6ecP6`
 
 Esta chave está configurada no arquivo `docker-compose.yml` e é injetada no ambiente do container back-end.
 
-## 6. Credenciais de Banco de Dados
+## 7. Instruções de Execução via Docker (Recomendado)
 
-As credenciais padrão sugeridas para o arquivo `.env` são:
-*   **Database:** rodojacto_db
-*   **User:** admin
-*   **Password:** rodo1234jacto
+O projeto está configurado para ser executado integralmente via Docker Compose, o que automatiza a configuração do banco de dados, compilação dos serviços e provisionamento da rede interna.
 
-## 7. Carga Inicial de Dados (Seeding)
+### Passos para execução:
+
+1. Certifique-se de que as portas 80, 8080 e 3306 não estejam sendo utilizadas por outros serviços em sua máquina host.
+2. Crie um arquivo `.env` baseado no `.env.example`.
+3. Certifique-se de estar na raiz do projeto clonado no terminal.
+4. Execute o comando abaixo para iniciar o provisionamento:
+    ```bash
+    docker compose up --build
+    ```
+5. Aguarde a conclusão do build e a inicialização dos serviços. O backend aguardará a prontidão do banco de dados antes de iniciar.
+
+### Acesso aos Serviços:
+* **Interface Web (Front-end):** http://localhost (Porta 80)
+* **API (Back-end):** http://localhost:8080
+* **Banco de Dados (MySQL):** localhost:3306
+
+## 8. Carga Inicial de Dados (Seeding)
 
 O sistema possui um mecanismo de **Seed Automático** (`DataSeeder`) que popula a base de dados na primeira inicialização.
 
@@ -82,14 +100,14 @@ O sistema possui um mecanismo de **Seed Automático** (`DataSeeder`) que popula 
 - Logs detalhados visíveis via `docker logs rodojacto_backend`.
 - Popula: 5 Organizações, Colaboradores (Gerentes e Operadores) e Dispositivos.
 
-## 8. Credenciais para Teste
+## 9. Credenciais para Teste
 
 ### Perfil Gerente (Acesso Global)
-*   **E-mail:** admin@rodojacto.com.br
-*   **Senha:** 123456
+* **E-mail:** admin@rodojacto.com.br
+* **Senha:** 123456
 
 ### Perfil Operador (Acesso Restrito)
-*   **E-mail:** carlos@rodojacto.com.br (Gerente da Filial Sul) ou e-mails de operadores como `op.matriz0@rodojacto.com.br`.
-*   **Senha:** 123456
+* **E-mail:** carlos@rodojacto.com.br (Gerente da Filial Sul) ou e-mails de operadores como `op.matriz0@rodojacto.com.br`.
+* **Senha:** 123456
 
-> **Nota sobre Segurança:** Usuários com perfil `OPERATOR` possuem visualização restrita apenas à organização a que pertencem, com interface adaptada para ocultar ações administrativas.
+> **Nota sobre Segurança:** Usuários com perfil `OPERATOR` possuem visualização restrita apenas à organização a que pertencem, com interface adaptada para ocultar ações administrativas, fora isso, eles não podem adicionar novos dispositivos ou colaboradores, retornando erro ao abrir o forms.
